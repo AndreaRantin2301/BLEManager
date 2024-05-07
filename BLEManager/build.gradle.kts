@@ -12,7 +12,7 @@ afterEvaluate {
 
                 groupId = "com.github.AndreaRantin2301"
                 artifactId  = "BLEManager"
-                version = "0.0.2"
+                version = "0.0.3"
             }
         }
     }
