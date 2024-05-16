@@ -7,8 +7,16 @@ import com.andrearantin.blemanager.BLEDataManager
 import com.andrearantin.blemanager.BLEService
 import com.andrearantin.blemanager.data.BLEConnectionEvent
 import com.andrearantin.blemanager.data.BLEDataResult
+import com.andrearantin.blemanager.data.CrcConfig
+import com.andrearantin.blemanager.data.SofEofConfig
+import com.andrearantin.blemanager.data.command.BLECommand
+import com.andrearantin.blemanager.data.command.BytesResult
+import com.andrearantin.blemanager.data.command.CommandBytesResult
+import com.andrearantin.blemanager.data.command.CommandDataConfig
 import com.andrearantin.blemanager.utils.BLEManagerLogger
+import com.andrearantin.blemanagerexample.NDKBridge
 import com.andrearantin.blemanagerexample.TestViewsActivity
+import com.andrearantin.blemanagerexample.data.TestCmdData
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.collectIndexed
 import kotlinx.coroutines.flow.consumeAsFlow
@@ -75,5 +83,76 @@ class TestViewsViewModel @Inject constructor(
         Log.w("TEST", "CONNECTION RES: $res")
     }
 
+    fun testGetCmdAck(){
+        val bleCommand : BLECommand<Unit> = BLECommand(0x41,Unit)
+        bleCommand.usesHeader = true
+        val sofEofConfig : SofEofConfig = SofEofConfig(
+            sofBytePos = 1,
+            eofBytePos = 8,
+            sofVal = 0xAA.toByte(),
+            eofVal = 0xBB.toByte(),
+            isUsed = true
+        )
+        bleCommand.sofEofConfig = sofEofConfig
+        val crcConfig : CrcConfig = CrcConfig(
+            crcBytePos = 7,
+            crcLen = 5,
+            crcDataStartPos = 2,
+            crcDataEndPos = 6,
+            calcCrcFun = { byteArray, len ->
+                NDKBridge.crcFast(byteArray,len)
+            },
+            isUsed = true
+        )
+    }
 
+    fun testGetCmd(){
+        val bleCommand : BLECommand<TestCmdData> = BLECommand(0x41, TestCmdData(147,2192))
+        bleCommand.usesHeader = true
+        val sofEofConfig : SofEofConfig = SofEofConfig(
+            sofBytePos = 1,
+            eofBytePos = 8,
+            sofVal = 0xAA.toByte(),
+            eofVal = 0xBB.toByte(),
+            isUsed = true
+        )
+        bleCommand.sofEofConfig = sofEofConfig
+        val crcConfig : CrcConfig = CrcConfig(
+            crcBytePos = 7,
+            crcLen = 5,
+            crcDataStartPos = 2,
+            crcDataEndPos = 6,
+            calcCrcFun = { byteArray, len ->
+                NDKBridge.crcFast(byteArray,len)
+            },
+            isUsed = true
+        )
+        bleCommand.crcConfig = crcConfig
+
+        val cmdDataConfig : CommandDataConfig<TestCmdData> = CommandDataConfig(
+            cmdDataStartPos = 2,
+            cmdDataEndPos = 6,
+            cmdDataLen = 5,
+            packDataFun = {cmdData, cmdBytes ->
+                  packData(cmdData,cmdBytes)
+            },
+            isMsbFirst = true
+        )
+        bleCommand.cmdDataConfig = cmdDataConfig
+        val cmdBytesResult : CommandBytesResult = bleCommand.getCmdBytes()
+        if (cmdBytesResult.result == BytesResult.OK){
+            Log.w(TAG, "GET BYTES OK ${cmdBytesResult.cmdBytes.contentToString()}")
+        }else{
+            Log.w(TAG, "GET BYTES ERROR ${cmdBytesResult.result}")
+        }
+    }
+
+    private fun packData(testCmdData: TestCmdData,cmdBytes : ByteArray) : Boolean {
+        if (cmdBytes.size < 4) return false
+        cmdBytes[3] = testCmdData.threshold1.shr(8).toByte()
+        cmdBytes[4] = testCmdData.threshold1.toByte()
+        cmdBytes[5] = testCmdData.threshold2.shr(8).toByte()
+        cmdBytes[6] = testCmdData.threshold2.toByte()
+        return true
+    }
 }

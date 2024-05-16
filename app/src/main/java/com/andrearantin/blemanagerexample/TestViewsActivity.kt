@@ -14,6 +14,10 @@ class TestViewsActivity : AppCompatActivity() {
 
     companion object {
         private val TAG = TestViewsActivity::class.qualifiedName
+
+        init {
+            System.loadLibrary("blemanagerexample")
+        }
     }
 
     private val testViewsViewModel by viewModels<TestViewsViewModel>()
@@ -24,6 +28,11 @@ class TestViewsActivity : AppCompatActivity() {
         btn.setOnClickListener {
             Log.w(TAG, "TEST CONNECTION")
             testViewsViewModel.testConnection()
+        }
+        val getCmdBtn : Button = findViewById(R.id.testGetCmd)
+        getCmdBtn.setOnClickListener {
+            Log.w(TAG, "TEST GET CMD")
+            testViewsViewModel.testGetCmd()
         }
 
     }

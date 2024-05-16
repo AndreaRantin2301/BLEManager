@@ -9,7 +9,6 @@ import com.andrearantin.blemanager.data.SofEofConfig
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.runBlocking
 
-//TODO CAMBIARE
 /**
  * Class to manage BLE received data and send updates on connection events
  * * @property connectionEventChannel channel for delivering connectivity change results
