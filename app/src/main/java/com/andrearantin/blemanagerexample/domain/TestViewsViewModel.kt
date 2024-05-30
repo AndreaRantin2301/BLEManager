@@ -72,12 +72,16 @@ class TestViewsViewModel @Inject constructor(
     }
 
     fun testConnection(){
-        bleService.serviceUuid = UUID.fromString("6e400001-c352-11e5-953d-0002a5d5c51b")
+        /*bleService.serviceUuid = UUID.fromString("6e400001-c352-11e5-953d-0002a5d5c51b")
         bleService.readUuid = UUID.fromString("6e400003-c352-11e5-953d-0002a5d5c51b")
-        bleService.writeUuid = UUID.fromString("6e400002-c352-11e5-953d-0002a5d5c51b")
+        bleService.writeUuid = UUID.fromString("6e400002-c352-11e5-953d-0002a5d5c51b")*/
+        bleService.serviceUuid = UUID.fromString("0000aaa0-0000-1000-8000-aabbccddeeff")
+        bleService.writeUuid = UUID.fromString("0000aaa1-0000-1000-8000-aabbccddeeff")
+        bleService.readUuid = UUID.fromString("0000aaa2-0000-1000-8000-aabbccddeeff")
 
         //TEST ADDRESS, YOU CAN GET THIS FROM A BLE DEVICE FROM A SCAN
-        val deviceAddress = "00:18:DA:50:22:9E"
+        //val deviceAddress = "00:18:DA:50:22:9E"
+        val deviceAddress = "67:94:F3:A2:07:6F"
         Log.w("TEST", "TEST CONNECT")
         val res = bleService.connect(deviceAddress)
         Log.w("TEST", "CONNECTION RES: $res")

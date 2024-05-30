@@ -25,6 +25,7 @@ import javax.inject.Inject
  * @property writeUuid write service UUID of the BLE device
  * @property readUuid read service UUID of the BLE device
  */
+@OptIn(ExperimentalStdlibApi::class)
 @SuppressLint("MissingPermission")
 @AndroidEntryPoint
 class BLEService @Inject constructor(
@@ -193,6 +194,8 @@ class BLEService @Inject constructor(
         ) {
             BLEManagerLogger.d(TAG, "CHARACTERISTIC CHANGED")
             if (characteristic == null) return
+            BLEManagerLogger.d(TAG, "VALUE ${characteristic.value.toTypedArray()}")
+            BLEManagerLogger.d(TAG, "HEX STRING ${characteristic.value.contentToString()}")
             bleServiceInterface.onBLEDataReceived(characteristic)
         }
 
@@ -202,6 +205,8 @@ class BLEService @Inject constructor(
             value: ByteArray
         ) {
             BLEManagerLogger.d(TAG, "CHARACTERISTIC CHANGED")
+            BLEManagerLogger.d(TAG, "VALUE ${characteristic.value.toTypedArray()}")
+            BLEManagerLogger.d(TAG, "HEX STRING ${characteristic.value.contentToString()}")
             bleServiceInterface.onBLEDataReceived(characteristic)
         }
     }
