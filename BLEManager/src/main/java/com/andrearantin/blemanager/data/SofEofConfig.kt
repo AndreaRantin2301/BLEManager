@@ -1,6 +1,12 @@
 package com.andrearantin.blemanager.data
 
 /**
+ * Created by: Andrea Rantin
+ * Date: 07/06/2024
+ * Time: 17:35
+ */
+
+/**
  * Class representing the SOF and EOF checks configuration in your app. You can change byte positions and values for SOF and EOF
  * @param isUsed when set to false all SOF and EOF checks on the received data are skipped. Defaults to true
  * @param sofVal value assigned to the SOF byte that will be checked in every packet

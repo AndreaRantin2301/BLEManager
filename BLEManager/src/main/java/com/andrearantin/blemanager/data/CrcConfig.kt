@@ -1,6 +1,12 @@
 package com.andrearantin.blemanager.data
 
 /**
+ * Created by: Andrea Rantin
+ * Date: 07/06/2024
+ * Time: 17:35
+ */
+
+/**
  * Class representing the configuration of the CRC in your app. You can change the bytes positions and crc length as you need
  * @param isUsed when set to false all CRC checks on the received data are skipped. Defaults to true
  * @param calcCrcFun function used to calculate the CRC. Remember to set this if you plan on using this class
