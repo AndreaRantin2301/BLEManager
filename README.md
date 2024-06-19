@@ -121,3 +121,23 @@ data class CmdData(
 
 ```
 
+#### Additional customization
+
+Some bluetooth modules like the Proteus-E may require you to send a byte with a specific value like 0x01 as the first byte in order to receive what you send. 
+To take this into account the **BLECommand** class has a **usesHeader** boolean parameter that can be toggled depending on the needs of your app. 
+This parameter defaults to **true**. The command also has a **headerVal** parameter that specifies the value of that byte in case you need to change it.
+That parameter defaults to **0x01**.
+Take for example a command that would generate a byte array like this: **0x41 0x60 0x61 0x62**.
+If the **usesHeader** parameter is set to true the array would actually look like this: **0x01 0x41 0x60 0x61 0x62**(Where 0x01 is the value of the header byte)
+
+Example
+
+```
+bleCommand.usesHeader = true //THIS WILL ADD THE HEADER BYTE
+bleCommand.headerVal = 0x01 //THE HEADER BYTE WILL BE 0x01
+
+```
+
+
+
+
