@@ -232,3 +232,67 @@ Possible results from **getCmdBytes**
 - BytesResult.ERROR_CRC --> There was an error related to the CRC function or configuration. **cmdBytes** will be **null** in that case
 - BytesResult.ERROR_CMD_DATA --> There was an error related to the packCmdData function or how the command data configuration was set up. **cmdBytes** will be **null** in that case
 - BytesResult.OK --> Everything was successful. **cmdBytes** will contain the byte array representation of the command
+
+
+## Receiving data
+
+### Configuring the BLEDataManager class
+
+The **BLEDataManager** class is responsible for checking that all of the data that you receive is correct.
+It has a **dataLen** parameter that corresponds to the total lenght of the data received from the BLE device. It also has a **SofEofConfig** and a **CrcConfig** that work the same way as the command(but instead of the checking the byte array of the command to send they check the byte array received from the BLE device).
+
+Here's an example configuration
+
+```
+
+val sofEofConfig : SofEofConfig = SofEofConfig(
+    sofBytePos = 1,
+    eofBytePos = 8, 
+    sofVal = 0xAA.toByte(),
+    eofVal = 0xBB.toByte(),
+    isUsed = true
+)
+bleDataManager.sofEofConfig = sofEofConfig
+
+val crcConfig : CrcConfig = CrcConfig(
+    crcBytePos = 7,
+    crcLen = 5,
+    crcDataStartPos = 2,
+    crcDataEndPos = 6,
+    calcCrcFun = { byteArray, len ->
+        NDKBridge.crcFast(byteArray,len)
+    },
+    isUsed = true
+)
+bleDataManager.crcConfig = crcConfig
+
+```
+
+### Listening for data reception
+
+To listen for updates about data reception you have to receive values from the **characteristicDataChannel** of the **BLEDataManager** class. That channel sends **BLEDataEvent** values. 
+A **BLEDataEvent** is composed by a **data** parameter that holds the byte array of the received data and a **status** that can have the following values
+
+- BLEDataResult.SOF_EOF_ERROR --> The received data did not pass the SOF/EOF checks. **data** will be null in that case
+- BLEDataResult.CRC_ERROR --> The received data did not pass the CRC checks. **data** will be null in that case
+- BLEDataResult.OK --> The received data is ok. **data** will have the received byte array
+
+Here's how to listen to the **characteristicDataChannel** updates
+
+```
+
+ bleDataManager.characteristicDataChannel.consumeAsFlow().collect {dataEvent ->
+    when(dataEvent.status){
+        BLEDataResult.SOF_EOF_ERROR -> {
+            //YOUR ERROR LOGIC HERE
+        }
+        BLEDataResult.CRC_ERROR -> {
+            //YOUR ERROR LOGIC HERE
+        }
+        BLEDataResult.OK -> {
+            //EVERYTHING WAS OK YOU CAN GET THE RECEIVED BYTE ARRAY WITH dataEvent.data
+        }
+    }
+}
+
+```
