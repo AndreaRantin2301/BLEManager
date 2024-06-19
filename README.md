@@ -166,7 +166,7 @@ bleCommand.sofEofConfig = sofEofConfig
 ##### CRC configuration
 
 If you want additional integrity check like a CRC check on data sent with the command you can configure the **CrcConfig** data class of **BLECommand**. This class specifies the position in the byte array
-of the byte that contains the result of the CRC check aswell as the lenght of the data on which the CRC is calculated on, and the start and end index of the data on which the CRC is calculated on. It also has a **calcCrcFun** parameter that takes in a function that wants 2 parameters: the command byte array and the CRC lenght, and returns a byte that corresponds to the CRC value. It also has a boolean flag to disable or enable any CRC checks on the command byte array and addition of the CRC byte.
+of the byte that contains the result of the CRC check aswell as the lenght of the data on which the CRC is calculated on, and the start and end index of the data on which the CRC is calculated on. It also has a **calcCrcFun** parameter that takes in your implementation of a function to calculate the CRC that wants 2 parameters: the command byte array and the CRC lenght, and returns a byte that corresponds to the CRC value. It also has a boolean flag to disable or enable any CRC checks on the command byte array and addition of the CRC byte.
 
 Example
 
@@ -185,3 +185,50 @@ val crcConfig : CrcConfig = CrcConfig(
 bleCommand.crcConfig = crcConfig
 
 ```
+##### Command data configuration
+
+To configure how the data from the data class of the command is packed into the byte array you can use the class **CommandDataConfig** of **BLECommand**. It specifies the start and end index of where the data
+needs to be in the command byte array, aswell as the total data lenght. It also has a **packDataFun** parameter that takes in your implementation of a function that packs the command data into a byte array to be added to the command bytes. It wants 2 parameters: the data class representing the command data(I.e our CmdData from our previous example) and the byte array in which the data will be packed into bytes. It needs to return a boolean that indicates whether the packing was successfull or not
+
+Example
+
+```
+
+val cmdDataConfig : CommandDataConfig<TestCmdData> = CommandDataConfig(
+    cmdDataStartPos = 2,
+    cmdDataEndPos = 6,
+    cmdDataLen = 5,
+    packDataFun = {cmdData, cmdBytes ->
+          packData(cmdData,cmdBytes)
+    },
+    isMsbFirst = true //NOT USED FOR THE MOMENT
+)
+bleCommand.cmdDataConfig = cmdDataConfig
+
+```
+
+### Get byte array from command and transmit
+
+Once the command is configured you can get its byte array representation and send it to the BLE device like this:
+
+```
+
+val cmdBytesResult : CommandBytesResult = bleCommand.getCmdBytes()
+    if (cmdBytesResult.result == BytesResult.OK){
+        bleService.writeBytes(cmdBytesResult.cmdBytes) //SEND THE COMMAND TO THE BLE DEVICE
+    }else{
+        //MANAGE THE ERROR ACCORDING TO YOUR NEEDS
+    }
+
+```
+
+The **getCmdBytes** function returns a **CommandBytesResult**. The **CommandBytesResult** contains a **result** param indicating if the operation was succesful and a **cmdBytes** param that contains
+the command byte array representation if the operation was successful or is null if there was an error.
+
+Possible results from **getCmdBytes**
+
+- BytesResult.ERROR_HEADER --> There was an error related to the header byte. **cmdBytes** will be **null** in that case
+- BytesResult.ERROR_SOF_EOF --> There was an error related to the SOF/EOF bytes. **cmdBytes** will be **null** in that case
+- BytesResult.ERROR_CRC --> There was an error related to the CRC function or configuration. **cmdBytes** will be **null** in that case
+- BytesResult.ERROR_CMD_DATA --> There was an error related to the packCmdData function or how the command data configuration was set up. **cmdBytes** will be **null** in that case
+- BytesResult.OK --> Everything was successful. **cmdBytes** will contain the byte array representation of the command
