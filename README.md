@@ -123,6 +123,8 @@ data class CmdData(
 
 #### Additional customization
 
+##### Header byte
+
 Some bluetooth modules like the Proteus-E may require you to send a byte with a specific value like 0x01 as the first byte in order to receive what you send. 
 To take this into account the **BLECommand** class has a **usesHeader** boolean parameter that can be toggled depending on the needs of your app. 
 This parameter defaults to **true**. The command also has a **headerVal** parameter that specifies the value of that byte in case you need to change it.
@@ -138,6 +140,48 @@ bleCommand.headerVal = 0x01 //THE HEADER BYTE WILL BE 0x01
 
 ```
 
+##### SOF/EOF bytes configuration
 
+If you want some integrity check between packets sent and received with the BLE device, it might be a good idea to implement a SOF/EOF bytes check where both ends check
+if the first and last byte of the array are equal to a defined value. To accomodate this the **BLECommand** class has a data class parameter called **SofEofConfig** 
+that can be configured.
 
+In this data class you can specify the position of both the SOF and EOF byte and their value. It also has a boolean flag to enable/disable it(If disabled no SOF/EOF bytes will be added to the byte array of the command)
 
+Example
+
+```
+
+val sofEofConfig : SofEofConfig = SofEofConfig(
+    sofBytePos = 1,
+    eofBytePos = 8, 
+    sofVal = 0xAA.toByte(),
+    eofVal = 0xBB.toByte(),
+    isUsed = true
+)
+bleCommand.sofEofConfig = sofEofConfig
+
+```
+
+##### CRC configuration
+
+If you want additional integrity check like a CRC check on data sent with the command you can configure the **CrcConfig** data class of **BLECommand**. This class specifies the position in the byte array
+of the byte that contains the result of the CRC check aswell as the lenght of the data on which the CRC is calculated on, and the start and end index of the data on which the CRC is calculated on. It also has a **calcCrcFun** parameter that takes in a function that wants 2 parameters: the command byte array and the CRC lenght, and returns a byte that corresponds to the CRC value. It also has a boolean flag to disable or enable any CRC checks on the command byte array and addition of the CRC byte.
+
+Example
+
+```
+
+val crcConfig : CrcConfig = CrcConfig(
+    crcBytePos = 7,
+    crcLen = 5,
+    crcDataStartPos = 2,
+    crcDataEndPos = 6,
+    calcCrcFun = { byteArray, len ->
+        NDKBridge.crcFast(byteArray,len)
+    },
+    isUsed = true
+)
+bleCommand.crcConfig = crcConfig
+
+```
