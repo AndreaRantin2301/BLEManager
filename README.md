@@ -112,6 +112,8 @@ val bleCommandWithData : BLECommand<CmdData> = BLECommand(0x41, CmdData(147,2192
 
 ```
 
+```
+
 data class CmdData(
     val valueToSend1 : Int,
     val valueToSend2 : Int
