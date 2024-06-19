@@ -62,3 +62,60 @@ The value returned are as follow:
 - BLEConnectionEvent.BLE_CONNECTED --> The service has successfully connected to the device but the services have not yet been discovered. You cannot send or receive data yet
 - BLEConnectionEvent.BLE_DISCONNECTED --> The device disconnected
 - BLEConnectionEvent.BLE_SERVICES_DISCOVERED --> The services needed for communication have been discovered. You can start sending and receiving data from the device
+
+To receive those updates you need to setup a channel to receive values like this: 
+
+```
+
+ bleDataManager.connectionEventChannel.consumeAsFlow().collect { bleConnectionEvent ->
+    when(bleConnectionEvent){
+        //MANAGE UI AND LOGIC AS NEEDED DEPENDING ON ACTION
+        BLEConnectionEvent.BLE_CONNECTED -> {
+           //YOUR DEVICE CONNECTED LOGIC HERE
+        }
+        BLEConnectionEvent.BLE_DISCONNECTED -> {
+            //YOUR DEVICE DISCONNECTED LOGIC HERE
+        }
+        BLEConnectionEvent.BLE_SERVICES_DISCOVERED -> {
+            //READY TO RECEIVE AND TRASMIT DATA
+        }
+    }
+}
+
+```
+
+## Setting up to transmit data
+
+### Command structure
+
+This library has a command structure where commands who have a cmd value and a data class that holds all the command's data to be transmitted are converted in
+a byte array. The class that represents a command is called **BLECommand** and you need to specify with a data class what data the command holds if any.
+Here are some examples.
+
+#### Command that has no data
+
+A command that has no data to be transmitted is only composed of a byte that specifies the command value(i.e 0x41)
+
+```
+
+val commandWithNoData : BLECommand<Unit> = BLECommand(0x41,Unit)
+
+```
+
+#### Command that has data
+
+A command that has data also has a data class instance that comes with it that holds all of the command's data(For example integer values that need to be sent to the BLE device)
+
+```
+
+val bleCommandWithData : BLECommand<CmdData> = BLECommand(0x41, CmdData(147,2192))
+
+```
+
+data class CmdData(
+    val valueToSend1 : Int,
+    val valueToSend2 : Int
+)
+
+```
+
