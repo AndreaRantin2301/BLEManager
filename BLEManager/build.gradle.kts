@@ -14,7 +14,7 @@ afterEvaluate {
 
                 groupId = "com.github.AndreaRantin2301"
                 artifactId  = "BLEManager"
-                version = "1.0.0"
+                version = "1.0.1"
             }
         }
     }
@@ -41,11 +41,11 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
+        sourceCompatibility = JavaVersion.VERSION_17 //SI POTREBBE PROVARE CON JAVA 17
+        targetCompatibility = JavaVersion.VERSION_17
     }
     kotlinOptions {
-        jvmTarget = "1.8"
+        jvmTarget = "17" //PRIMA 1.8
     }
 }
 
