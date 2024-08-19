@@ -34,8 +34,7 @@ class BLEDataManager() : BLEServiceInterface {
         }
     }
 
-    override fun onBLEDataReceived(bluetoothGattCharacteristic: BluetoothGattCharacteristic) {
-        val data : ByteArray = bluetoothGattCharacteristic.value
+    override fun onBLEDataReceived(data : ByteArray) {
         runBlocking {
             if (!checkSofEof(data)) characteristicDataChannel.send(BLEDataEvent(BLEDataResult.SOF_EOF_ERROR,null))
             if (!checkCrc(data)) characteristicDataChannel.send(BLEDataEvent(BLEDataResult.CRC_ERROR,null))

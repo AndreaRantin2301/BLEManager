@@ -2,6 +2,7 @@ package com.andrearantin.blemanager.di
 
 import android.bluetooth.BluetoothAdapter
 import android.bluetooth.BluetoothManager
+import android.bluetooth.le.BluetoothLeScanner
 import android.content.Context
 import androidx.core.content.ContextCompat
 import com.andrearantin.blemanager.BLEDataManager
@@ -28,6 +29,12 @@ object BLEModule {
     @Singleton
     fun provideBluetoothAdapter(@ApplicationContext context: Context) : BluetoothAdapter?{
         return ContextCompat.getSystemService(context, BluetoothManager::class.java)?.adapter
+    }
+
+    @Provides
+    @Singleton
+    fun provideBLEScanner(@Nullable bleAdapter : BluetoothAdapter?) : BluetoothLeScanner?{
+        return bleAdapter?.bluetoothLeScanner
     }
 
     @Provides

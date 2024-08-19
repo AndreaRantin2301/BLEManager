@@ -171,7 +171,7 @@ class BLEService @Inject constructor(
             BLEManagerLogger.d(TAG, "CHARACTERISTIC READ WITH STATUS: $status")
             if (status == BluetoothGatt.GATT_SUCCESS){
                 if (characteristic == null) return
-                bleServiceInterface.onBLEDataReceived(characteristic)
+                bleServiceInterface.onBLEDataReceived(characteristic.value)
             }
         }
 
@@ -183,7 +183,7 @@ class BLEService @Inject constructor(
         ) {
             BLEManagerLogger.d(TAG, "CHARACTERISTIC READ WITH STATUS: $status")
             if (status == BluetoothGatt.GATT_SUCCESS){
-                bleServiceInterface.onBLEDataReceived(characteristic)
+                bleServiceInterface.onBLEDataReceived(value)
             }
         }
 
@@ -192,11 +192,11 @@ class BLEService @Inject constructor(
             gatt: BluetoothGatt?,
             characteristic: BluetoothGattCharacteristic?
         ) {
-            BLEManagerLogger.d(TAG, "CHARACTERISTIC CHANGED")
+            BLEManagerLogger.d(TAG, "CHARACTERISTIC CHANGED API <33")
             if (characteristic == null) return
             BLEManagerLogger.d(TAG, "VALUE ${characteristic.value.toTypedArray()}")
             BLEManagerLogger.d(TAG, "HEX STRING ${characteristic.value.contentToString()}")
-            bleServiceInterface.onBLEDataReceived(characteristic)
+            bleServiceInterface.onBLEDataReceived(characteristic.value)
         }
 
         override fun onCharacteristicChanged(
@@ -204,10 +204,10 @@ class BLEService @Inject constructor(
             characteristic: BluetoothGattCharacteristic,
             value: ByteArray
         ) {
-            BLEManagerLogger.d(TAG, "CHARACTERISTIC CHANGED")
-            BLEManagerLogger.d(TAG, "VALUE ${characteristic.value.toTypedArray()}")
-            BLEManagerLogger.d(TAG, "HEX STRING ${characteristic.value.contentToString()}")
-            bleServiceInterface.onBLEDataReceived(characteristic)
+            BLEManagerLogger.d(TAG, "CHARACTERISTIC CHANGED API >=33")
+            BLEManagerLogger.d(TAG, "VALUE ${value.toTypedArray()}")
+            BLEManagerLogger.d(TAG, "HEX STRING ${value.contentToString()}")
+            bleServiceInterface.onBLEDataReceived(value)
         }
     }
 

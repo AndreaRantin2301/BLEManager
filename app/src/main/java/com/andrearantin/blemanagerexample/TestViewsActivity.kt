@@ -6,6 +6,7 @@ import android.util.Log
 import android.widget.Button
 import androidx.activity.viewModels
 import com.andrearantin.blemanager.BLEDataManager
+import com.andrearantin.blemanager.utils.BLEManagerLogger
 import com.andrearantin.blemanagerexample.domain.TestViewsViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -14,10 +15,6 @@ class TestViewsActivity : AppCompatActivity() {
 
     companion object {
         private val TAG = TestViewsActivity::class.qualifiedName
-
-        init {
-            System.loadLibrary("blemanagerexample")
-        }
     }
 
     private val testViewsViewModel by viewModels<TestViewsViewModel>()
@@ -25,6 +22,7 @@ class TestViewsActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_test_views)
         val btn : Button = findViewById(R.id.testBtn)
+        BLEManagerLogger.logsEnabled = true
         btn.setOnClickListener {
             Log.w(TAG, "TEST CONNECTION")
             testViewsViewModel.testConnection()

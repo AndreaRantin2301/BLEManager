@@ -1,6 +1,7 @@
 package com.andrearantin.blemanagerexample.domain
 
 import android.util.Log
+import android.widget.Toast
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.andrearantin.blemanager.BLEDataManager
@@ -36,6 +37,7 @@ class TestViewsViewModel @Inject constructor(
     init {
         bleDataManager.crcConfig = bleDataManager.crcConfig.copy(isUsed = false)
         bleDataManager.sofEofConfig = bleDataManager.sofEofConfig.copy(isUsed = false)
+
         viewModelScope.launch {
             bleDataManager.connectionEventChannel.consumeAsFlow().collect { bleConnectionEvent ->
                 when(bleConnectionEvent){
@@ -53,6 +55,7 @@ class TestViewsViewModel @Inject constructor(
             }
 
             bleDataManager.characteristicDataChannel.consumeAsFlow().collect {dataEvent ->
+                Log.w(TAG, "RECEIVED!");
                 when(dataEvent.status){
                     BLEDataResult.SOF_EOF_ERROR -> {
                         //SOF EOF ERROR DO NEEED LOGIC
@@ -81,10 +84,11 @@ class TestViewsViewModel @Inject constructor(
 
         //TEST ADDRESS, YOU CAN GET THIS FROM A BLE DEVICE FROM A SCAN
         //val deviceAddress = "00:18:DA:50:22:9E"
-        val deviceAddress = "67:94:F3:A2:07:6F"
+        val deviceAddress = "55:FD:3C:FD:E9:1E"
         Log.w("TEST", "TEST CONNECT")
         val res = bleService.connect(deviceAddress)
         Log.w("TEST", "CONNECTION RES: $res")
+
     }
 
     fun testGetCmdAck(){
@@ -146,6 +150,8 @@ class TestViewsViewModel @Inject constructor(
         val cmdBytesResult : CommandBytesResult = bleCommand.getCmdBytes()
         if (cmdBytesResult.result == BytesResult.OK){
             Log.w(TAG, "GET BYTES OK ${cmdBytesResult.cmdBytes.contentToString()}")
+            val test = bleService.writeBytes(cmdBytesResult.cmdBytes)
+            Log.w(TAG, "TEST SEND $test")
         }else{
             Log.w(TAG, "GET BYTES ERROR ${cmdBytesResult.result}")
         }

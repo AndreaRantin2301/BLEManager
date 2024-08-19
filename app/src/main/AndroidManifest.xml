@@ -13,7 +13,9 @@
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
 
-    <uses-feature android:name="android.hardware.bluetooth_le" android:required="true"/>
+    <uses-feature
+        android:name="android.hardware.bluetooth_le"
+        android:required="true" />
 
     <application
         android:name=".AppController"
@@ -26,6 +28,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.BLEManagerExample"
         tools:targetApi="31">
+        <activity
+            android:name=".TestViewsActivityNoHilt"
+            android:exported="false" />
         <activity
             android:name=".TestComposeActivity"
             android:exported="false"
@@ -41,7 +46,10 @@
             </intent-filter>
         </activity>
 
-        <service android:name="com.andrearantin.blemanager.BLEService" android:enabled="true" android:stopWithTask="true"/>
+        <service
+            android:name="com.andrearantin.blemanager.BLEService"
+            android:enabled="true"
+            android:stopWithTask="true" />
     </application>
 
 </manifest>
